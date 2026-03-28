@@ -2,7 +2,7 @@
 
 > **Proposed feature** combining [#33978](https://github.com/anthropics/claude-code/issues/33978) (usage analytics), [#27915](https://github.com/anthropics/claude-code/issues/27915) (rate-limit visibility), and [#7328](https://github.com/anthropics/claude-code/issues/7328) (MCP context budget) into a single CLI command. Closes **23+ duplicate issues** with **50+ combined upvotes**.
 
-**[Interactive Demo](https://omsatyaswaroop29.github.io/claude-usage-contribution/demo/)** · [Roadmap](docs/ROADMAP.md) · [Contribution Guide](docs/CONTRIBUTION-GUIDE.md)
+**[Interactive Demo](https://omsatyaswaroop29.github.io/claude-usage-contribution/demo/)** · [Roadmap](docs/ROADMAP.md)
 
 ---
 
@@ -160,8 +160,6 @@ claude-usage-contribution/
 ├── demo/
 │   └── index.html                  ← Interactive demo with pixel mascot
 ├── docs/
-│   ├── CONTRIBUTION-GUIDE.md       ← Step-by-step git workflow
-│   ├── ISSUE-COMMENTS.md           ← Issue comment templates
 │   └── ROADMAP.md                  ← Phase breakdown
 ├── src/
 │   ├── types.ts                    ← Shared type definitions
