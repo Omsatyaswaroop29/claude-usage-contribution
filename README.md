@@ -2,27 +2,19 @@
 
 > **Proposed feature** combining [#33978](https://github.com/anthropics/claude-code/issues/33978) (usage analytics), [#27915](https://github.com/anthropics/claude-code/issues/27915) (rate-limit visibility), and [#7328](https://github.com/anthropics/claude-code/issues/7328) (MCP context budget) into a single CLI command. Closes **23+ duplicate issues** with **50+ combined upvotes**.
 
-**[Interactive Demo](https://omsatyaswaroop29.github.io/claude-usage-contribution/demo/)** · [Roadmap](docs/ROADMAP.md)
+**[Try the Interactive Demo](https://omsatyaswaroop29.github.io/claude-usage-contribution/demo/)** · [Roadmap](docs/ROADMAP.md)
 
 ---
 
-## The problem
+## Demo
 
-Claude Code users have zero visibility into what they're consuming — no token counts, no cost tracking, no rate-limit awareness, and no understanding of which MCP tools eat their context window. This is the single most requested feature category in the repo, with 10+ duplicate issues filed independently.
+> **[Click here for the full interactive demo with animated terminal + pixel mascot](https://omsatyaswaroop29.github.io/claude-usage-contribution/demo/)**
 
-## The solution
-
-A single `claude usage` command that answers three questions at once:
-
-```bash
-claude usage                          # What am I spending?
-claude usage --rate-limit             # Am I about to hit a cap?
-claude usage --mcp-breakdown          # Where is my context window going?
-```
-
-### Default output
+### `claude usage` — usage summary
 
 ```
+~ claude usage
+
 Claude Code Usage Summary (Mar 1 - Mar 28, 2026)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -42,6 +34,107 @@ Claude Code Usage Summary (Mar 1 - Mar 28, 2026)
     my-app            $5.67  │████████████████░░░░░░░░░░░░░░│
     backend           $3.89  │███████████░░░░░░░░░░░░░░░░░░░│
     scripts           $2.78  │████████░░░░░░░░░░░░░░░░░░░░░░│
+```
+
+### `claude usage --rate-limit` — are you about to hit a cap?
+
+```
+~ claude usage --rate-limit
+
+Rate Limits
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Session usage:  72.5%  [■■■■■■■■■■■■■■·····] !
+  Daily usage:    45.0%  [■■■■■■■■■···········]
+
+  Requests left:  847
+  Tokens left:    1,234,567
+  Resets at:      2026-03-29T00:00:00Z
+  Plan:           Pro
+```
+
+### `claude usage --mcp-breakdown` — where is your context window going?
+
+```
+~ claude usage --mcp-breakdown
+
+MCP Context Budget
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Total MCP context: 34,521 tokens (17.3% of 200k window)
+
+  Server: playwright
+    Tools: 12          Cost: 8,234 tokens
+    ├─ browser_click           1,200 tokens
+    ├─ browser_navigate        1,100 tokens
+    └─ browser_screenshot        980 tokens
+
+  Server: github
+    Tools: 8           Cost: 4,567 tokens
+    ├─ create_pull_request     1,800 tokens
+    └─ search_code             1,200 tokens
+
+  Server: filesystem
+    Tools: 5           Cost: 2,100 tokens
+```
+
+### `claude usage --watch` — real-time monitoring
+
+```
+~ claude usage --watch
+
+  ● LIVE ─ refreshing every 2s
+
+  Session tokens:  12,456 in / 3,891 out
+  Session cost:    $0.47
+  Duration:        4m 23s
+
+  Rate limit:     72.5%  [■■■■■■■■■■■■■■·····] !
+  Context used:   34.2%  [■■■■■■■·············]
+
+  Active model:   claude-sonnet-4
+  MCP overhead:   34,521 tokens (17.3%)
+
+  Press q to quit, r to reset counters
+```
+
+### `claude usage --json` — pipe it anywhere
+
+```json
+~ claude usage --json
+
+{
+  "summary": {
+    "sessions": 47,
+    "total_cost_usd": 12.34,
+    "cache_hit_rate_pct": 78.1
+  },
+  "rate_limits": {
+    "session_usage_pct": 72.5,
+    "daily_usage_pct": 45.0,
+    "tokens_remaining": 1234567
+  },
+  "mcp_context": {
+    "total_tokens": 34521,
+    "usage_pct": 17.3
+  }
+}
+```
+
+---
+
+## The problem
+
+Claude Code users have zero visibility into what they're consuming — no token counts, no cost tracking, no rate-limit awareness, and no understanding of which MCP tools eat their context window. This is the single most requested feature category in the repo, with 10+ duplicate issues filed independently.
+
+## The solution
+
+A single `claude usage` command that answers three questions at once:
+
+```bash
+claude usage                          # What am I spending?
+claude usage --rate-limit             # Am I about to hit a cap?
+claude usage --mcp-breakdown          # Where is my context window going?
 ```
 
 ### All subcommands
