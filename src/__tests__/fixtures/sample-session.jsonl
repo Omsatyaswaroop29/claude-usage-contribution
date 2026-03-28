@@ -1,0 +1,8 @@
+{"type":"user","message":{"content":"Help me refactor the auth module"},"timestamp":"2025-03-15T10:30:00Z"}
+{"type":"assistant","message":{"content":"I'll help you refactor..."},"costUSD":0.0234,"durationMs":1823,"usage":{"input_tokens":4521,"output_tokens":892,"cache_creation_input_tokens":0,"cache_read_input_tokens":3200},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:30:05Z"}
+{"type":"user","message":{"content":"Now update the tests"},"timestamp":"2025-03-15T10:32:00Z"}
+{"type":"assistant","message":{"content":"Here are the updated tests..."},"costUSD":0.0456,"durationMs":3421,"usage":{"input_tokens":8234,"output_tokens":2341,"cache_creation_input_tokens":1200,"cache_read_input_tokens":5600},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:32:08Z"}
+{"type":"user","message":{"content":"Can you also add integration tests?"},"timestamp":"2025-03-15T10:35:00Z"}
+{"type":"assistant","message":{"content":"Sure, here are integration tests..."},"costUSD":0.1234,"durationMs":5678,"usage":{"input_tokens":12000,"output_tokens":4500,"cache_creation_input_tokens":800,"cache_read_input_tokens":8000},"model":"claude-opus-4-20250514","timestamp":"2025-03-15T10:35:12Z"}
+{"type":"user","message":{"content":"Thanks!"},"timestamp":"2025-03-15T10:40:00Z"}
+{"type":"assistant","message":{"content":"You're welcome!"},"costUSD":0.0012,"durationMs":234,"usage":{"input_tokens":500,"output_tokens":50,"cache_creation_input_tokens":0,"cache_read_input_tokens":400},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:40:02Z"}

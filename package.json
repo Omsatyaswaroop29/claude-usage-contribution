@@ -1,0 +1,19 @@
+{
+  "name": "@anthropic/claude-code-usage",
+  "version": "0.1.0",
+  "description": "Unified observability layer for Claude Code — usage analytics, rate-limit visibility, and MCP context budget tracking",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "npx tsx src/__tests__/run-tests.ts",
+    "test:watch": "npx tsx --watch src/__tests__/run-tests.ts",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["claude-code", "usage", "observability", "mcp", "rate-limiting"],
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

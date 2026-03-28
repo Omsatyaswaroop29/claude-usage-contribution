@@ -1,0 +1,9 @@
+{"type":"assistant","costUSD":0.01,"usage":{"input_tokens":100,"output_tokens":50},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:00:00Z"}
+this is not valid json at all
+{"type":"assistant","costUSD":0.02,"usage":{"input_tokens":200,"output_tokens":100},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:01:00Z"}
+
+{"broken json": true, missing closing brace
+{"type":"assistant","costUSD":0.03,"usage":{"input_tokens":300,"output_tokens":150},"model":"claude-opus-4-20250514","timestamp":"2025-03-15T10:02:00Z"}
+{"type":"user","message":{"content":"no usage data here"}}
+{"type":"assistant","message":{"content":"no cost or usage here either"}}
+{"type":"assistant","costUSD":0.04,"usage":{"input_tokens":400,"output_tokens":200},"model":"claude-sonnet-4-20250514","timestamp":"2025-03-15T10:03:00Z"}

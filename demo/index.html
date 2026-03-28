@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>claude usage — Interactive Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#13131e;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;font-family:'SF Mono','Fira Code','Cascadia Code',monospace}
+h1{color:#c0caf5;font-size:16px;font-weight:500;margin-bottom:6px;text-align:center}
+.sub{color:#565f89;font-size:12px;margin-bottom:20px;text-align:center}
+.sub a{color:#7aa2f7;text-decoration:none}
+.sub a:hover{text-decoration:underline}
+:root{--tb:#1a1b26;--tf:#c0caf5;--td:#565f89;--tg:#9ece6a;--ta:#e0af68;--tc:#bb9af7;--tbl:#7aa2f7;--tr:#f7768e;--to:#ff9e64;--tbg:#24283b}
+.w{background:var(--tb);border-radius:12px;overflow:hidden;font-family:inherit;font-size:13px;line-height:1.6;width:100%;max-width:640px}
+.wh{display:flex;align-items:center;padding:12px 16px 6px;gap:8px}
+.dt{width:10px;height:10px;border-radius:50%}.dr{background:#f7768e}.dy{background:#e0af68}.dg{background:#9ece6a}
+.wtt{color:var(--td);font-size:12px;margin-left:auto}
+.ma{display:flex;flex-direction:column;align-items:center;padding:18px 0 10px;position:relative;min-height:110px;cursor:pointer;user-select:none}
+.bub{position:absolute;top:2px;left:50%;transform:translateX(-50%);background:var(--tbg);border:1px solid var(--td);color:var(--tf);font-size:11.5px;padding:3px 11px;border-radius:10px;white-space:nowrap;opacity:0;transition:opacity .25s,top .25s}
+.bub.vis{opacity:1;top:-6px}
+.mc{position:relative}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes wig{0%,100%{transform:rotate(0)}20%{transform:rotate(-5deg)}40%{transform:rotate(5deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
+@keyframes jmp{0%{transform:translateY(0) scaleY(1)}12%{transform:translateY(3px) scaleY(.88) scaleX(1.12)}42%{transform:translateY(-18px) scaleY(1.1) scaleX(.93)}72%{transform:translateY(0) scaleY(.9) scaleX(1.08)}100%{transform:translateY(0) scaleY(1) scaleX(1)}}
+@keyframes tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(6deg)}}
+.a-bob .mc{animation:bob 2.2s ease-in-out infinite}
+.a-wig .mc{animation:wig .45s ease-in-out}
+.a-jmp .mc{animation:jmp .5s cubic-bezier(.34,1.56,.64,1)}
+.a-tilt .mc{animation:tilt .5s ease-in-out 2}
+@keyframes sparkle{0%{opacity:0;transform:scale(0) translateY(0)}40%{opacity:1;transform:scale(1.2) translateY(-14px)}100%{opacity:0;transform:scale(0) translateY(-28px)}}
+.stars{position:absolute;pointer-events:none}
+.pgs{display:flex;justify-content:center;gap:6px;padding:4px 0}
+.pg{width:6px;height:6px;border-radius:50%;background:var(--td);transition:background .3s,transform .3s;cursor:pointer}
+.pg.a{background:var(--tg);transform:scale(1.4)}
+.tabs{display:flex;gap:2px;padding:0 10px;flex-wrap:wrap}
+.tab{padding:4px 9px;border-radius:6px 6px 0 0;border:none;background:transparent;color:var(--td);font-family:inherit;font-size:11px;cursor:pointer;transition:background .15s,color .15s}
+.tab:hover{background:var(--tbg);color:var(--tf)}.tab.a{background:var(--tbg);color:var(--tg)}
+.wb{padding:8px 14px 12px;min-height:290px;background:var(--tbg);margin:0 8px 8px;border-radius:0 0 8px 8px;overflow-x:auto;white-space:pre}
+.ln{opacity:0;display:block}.ln.v{opacity:1;transition:opacity .08s}
+.cur{display:inline-block;width:7px;height:14px;background:var(--tf);vertical-align:middle}
+@keyframes bk{50%{opacity:0}}.cur.bk{animation:bk 1s step-end infinite}
+.pr{color:var(--tg)}.sp{color:var(--td)}.vl{color:var(--tf);font-weight:500}
+.lb{color:var(--td)}.hi{color:var(--tg)}.wn{color:var(--ta)}.inn{color:var(--tbl)}
+.ac{color:var(--tc)}.co{color:var(--to)}
+.bts{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.bts button{font-family:inherit;font-size:12px;padding:6px 16px;background:transparent;color:var(--td);border:1px solid #2a2a3e;border-radius:6px;cursor:pointer;transition:all .15s}
+.bts button:hover{background:#2a2a3e;color:var(--tf)}
+.ht{color:var(--td);font-size:11px;text-align:center;padding:0 0 4px;transition:opacity .3s}
+.ft{color:#3b3b52;font-size:11px;text-align:center;margin-top:20px}
+.ft a{color:#565f89;text-decoration:none}
+.ft a:hover{color:var(--tbl)}
+</style>
+</head>
+<body>
+<h1>claude usage &mdash; unified observability for Claude Code</h1>
+<p class="sub">
+  Proposed feature combining
+  <a href="https://github.com/anthropics/claude-code/issues/33978">#33978</a>,
+  <a href="https://github.com/anthropics/claude-code/issues/27915">#27915</a> &amp;
+  <a href="https://github.com/anthropics/claude-code/issues/7328">#7328</a>
+</p>
+<div class="w">
+<div class="wh"><div class="dt dr"></div><div class="dt dy"></div><div class="dt dg"></div><span class="wtt" id="status">~ ready</span></div>
+<div class="ma a-bob" id="ma" onclick="petClick()">
+<div id="bub" class="bub"></div>
+<div class="mc" id="mc">
+<canvas id="pet" width="96" height="80" style="image-rendering:pixelated"></canvas>
+<div class="stars" id="stars"></div>
+</div>
+</div>
+<div class="ht" id="hint">click me!</div>
+<div class="pgs" id="dots"></div>
+<div class="tabs" id="tabs"></div>
+<div class="wb" id="body"></div>
+</div>
+<div class="bts">
+<button id="prev">&#9664; Prev</button>
+<button id="replay">&#8635; Replay</button>
+<button id="next">Next &#9654;</button>
+</div>
+<p class="ft">
+  Built by <a href="https://github.com/Omsatyaswaroop29">Om Satya Swaroop</a> &mdash;
+  45 tests passing &middot; 2,100+ lines of TypeScript &middot;
+  <a href="https://github.com/anthropics/claude-code/issues/33978">View proposal</a>
+</p>
+<script>
+const P=8,GW=12,GH=10;
+const canvas=document.getElementById("pet");
+canvas.width=GW*P;canvas.height=GH*P;
+canvas.style.width=(GW*P)+"px";canvas.style.height=(GH*P)+"px";
+const ctx=canvas.getContext("2d");
+const B="#D85A30",BD="#B84A24",BL="#F0997B",SN="#F5C4B3",EY="#2C2C2A";
+let eyes="open",blinkT=null,clickN=0;
+function px(x,y,c){ctx.fillStyle=c;ctx.fillRect(x*P,y*P,P,P)}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  px(3,0,B);px(4,0,B);px(5,0,B);px(6,0,B);px(7,0,B);px(8,0,B);
+  px(2,1,B);px(3,1,B);px(4,1,B);px(5,1,B);px(6,1,B);px(7,1,B);px(8,1,B);px(9,1,B);
+  px(2,2,B);px(3,2,B);px(4,2,B);px(5,2,B);px(6,2,B);px(7,2,B);px(8,2,B);px(9,2,B);
+  px(1,3,B);px(2,3,B);px(3,3,B);px(4,3,B);px(5,3,B);px(6,3,B);px(7,3,B);px(8,3,B);px(9,3,B);px(10,3,B);
+  px(1,4,B);px(2,4,B);px(3,4,B);px(4,4,B);px(5,4,B);px(6,4,B);px(7,4,B);px(8,4,B);px(9,4,B);px(10,4,B);
+  px(1,5,B);px(2,5,B);px(3,5,B);px(4,5,B);px(5,5,B);px(6,5,B);px(7,5,B);px(8,5,B);px(9,5,B);px(10,5,B);
+  px(1,6,B);px(2,6,B);px(3,6,B);px(4,6,B);px(5,6,B);px(6,6,B);px(7,6,B);px(8,6,B);px(9,6,B);px(10,6,B);
+  px(2,7,B);px(3,7,B);px(4,7,B);px(5,7,B);px(6,7,B);px(7,7,B);px(8,7,B);px(9,7,B);
+  if(eyes==="open"){px(3,4,EY);px(4,4,EY);px(7,4,EY);px(8,4,EY)}
+  else if(eyes==="blink"){px(3,5,EY);px(4,5,EY);px(7,5,EY);px(8,5,EY)}
+  else if(eyes==="happy"){px(3,4,EY);px(4,4,EY);px(7,4,EY);px(8,4,EY)}
+  else if(eyes==="wide"){px(3,3,EY);px(4,3,EY);px(7,3,EY);px(8,3,EY);px(3,4,EY);px(4,4,EY);px(7,4,EY);px(8,4,EY)}
+  px(4,6,SN);px(5,6,SN);px(6,6,SN);px(7,6,SN);
+  px(4,7,SN);px(5,7,SN);px(6,7,SN);px(7,7,SN);
+  px(0,4,BL);px(0,5,BL);px(11,4,BL);px(11,5,BL);
+  px(2,8,B);px(3,8,B);px(5,8,B);px(6,8,B);px(8,8,B);px(9,8,B);
+  px(2,9,B);px(3,9,B);px(5,9,B);px(6,9,B);px(8,9,B);px(9,9,B);
+}
+function blink(){eyes="blink";draw();setTimeout(()=>{eyes="open";draw()},120)}
+function scheduleBlink(){clearTimeout(blinkT);blinkT=setTimeout(()=>{blink();scheduleBlink()},2200+Math.random()*3000)}
+function sparkle(){
+  const el=document.getElementById("stars"),colors=["#e0af68","#bb9af7","#9ece6a","#7aa2f7","#ff9e64"];
+  for(let i=0;i<6;i++){const s=document.createElement("div");
+  s.style.cssText="position:absolute;border-radius:50%;opacity:0;left:"+(20+Math.random()*56)+"px;top:"+(8+Math.random()*40)+"px;background:"+colors[i%colors.length]+";animation:sparkle "+(0.35+Math.random()*0.35)+"s ease-out "+(i*0.05)+"s forwards;width:"+(4+Math.random()*4)+"px;height:"+(4+Math.random()*4)+"px;pointer-events:none";
+  el.appendChild(s);setTimeout(()=>s.remove(),1200)}
+}
+function petClick(){
+  clickN++;const ma=document.getElementById("ma");document.getElementById("hint").style.opacity="0";
+  if(clickN%5===0){ma.className="ma a-jmp";sparkle();eyes="wide";draw();say(["Woohoo!","Let's ship it!","To the moon!","Amazing!"][Math.floor(Math.random()*4)]);setTimeout(()=>{ma.className="ma a-bob";eyes="happy";draw();setTimeout(()=>{eyes="open";draw()},600)},550)}
+  else if(clickN%3===0){ma.className="ma a-wig";eyes="happy";draw();say(["Hehe!","That tickles!","Again!","Nice!"][Math.floor(Math.random()*4)]);setTimeout(()=>{ma.className="ma a-bob";eyes="open";draw()},500)}
+  else{ma.className="ma a-tilt";eyes="happy";draw();say(["Hey!","Hi!","Oink!","Click the tabs!","What's up!"][Math.floor(Math.random()*5)]);setTimeout(()=>{ma.className="ma a-bob";eyes="open";draw()},500)}
+}
+const moods={chill:()=>{eyes="open"},alert:()=>{eyes="wide"},think:()=>{eyes="open"},hyped:()=>{eyes="happy"}};
+const msgs={
+  0:["Check your stats!","Nice cache hits!","Look at those numbers","Saving you money"],
+  1:["Watch those limits!","72% used...","Stay safe out there","I got your back"],
+  2:["Token budget time","Playwright is hungry","Trim the fat!","Context matters"],
+  3:["JSON is power","Pipe it anywhere","Script friendly!","Automate everything"],
+  4:["Going live!","Real-time baby","I update live","Never surprised"],
+};
+let mi={};function nextMsg(i){if(!mi[i])mi[i]=0;const m=msgs[i][mi[i]%msgs[i].length];mi[i]++;return m}
+const bubEl=document.getElementById("bub");let bubT=null;
+function say(t){clearTimeout(bubT);bubEl.textContent=t;bubEl.classList.add("vis");bubT=setTimeout(()=>bubEl.classList.remove("vis"),2600)}
+const demos=[
+  {label:"usage",cmd:"claude usage",mood:"chill",anim:"a-bob",lines:[
+    {t:"s",s:""},{t:"v",s:"Claude Code Usage Summary (Mar 1 - Mar 28, 2026)"},{t:"s",s:"\u2501".repeat(50)},{t:"s",s:""},
+    {t:"m",p:[{t:"lb",s:"  Sessions:     "},{t:"vl",s:"47"}]},
+    {t:"m",p:[{t:"lb",s:"  Total cost:   "},{t:"hi",s:"$12.34"}]},
+    {t:"m",p:[{t:"lb",s:"  Avg/session:  "},{t:"sp",s:"$0.26"}]},{t:"s",s:""},
+    {t:"v",s:"  Tokens"},
+    {t:"m",p:[{t:"lb",s:"    Input:      "},{t:"vl",s:"1,234,567"},{t:"sp",s:"  (cache hit: "},{t:"hi",s:"78%"},{t:"sp",s:")"}]},
+    {t:"m",p:[{t:"lb",s:"    Output:       "},{t:"vl",s:"456,789"}]},{t:"s",s:""},
+    {t:"v",s:"  By model"},
+    {t:"b",l:"    sonnet-4        ",c:"$8.21",x:"66%",f:.66,cl:"var(--tbl)"},
+    {t:"b",l:"    opus-4          ",c:"$4.13",x:"34%",f:.34,cl:"var(--tc)"},{t:"s",s:""},
+    {t:"v",s:"  Top projects"},
+    {t:"b",l:"    my-app          ",c:"$5.67",x:"",f:.46,cl:"var(--tg)"},
+    {t:"b",l:"    backend         ",c:"$3.89",x:"",f:.32,cl:"var(--tg)"},
+    {t:"b",l:"    scripts         ",c:"$2.78",x:"",f:.23,cl:"var(--tg)"},
+  ]},
+  {label:"rate-limit",cmd:"claude usage --rate-limit",mood:"alert",anim:"a-wig",lines:[
+    {t:"s",s:""},{t:"v",s:"Rate Limits"},{t:"s",s:"\u2501".repeat(45)},{t:"s",s:""},
+    {t:"p",l:"  Session usage:  ",x:"72.5%",f:.725,cl:"var(--ta)",w:1},
+    {t:"p",l:"  Daily usage:    ",x:"45.0%",f:.45,cl:"var(--tg)",w:0},{t:"s",s:""},
+    {t:"m",p:[{t:"lb",s:"  Requests left:  "},{t:"vl",s:"847"}]},
+    {t:"m",p:[{t:"lb",s:"  Tokens left:    "},{t:"vl",s:"1,234,567"}]},
+    {t:"m",p:[{t:"lb",s:"  Resets at:      "},{t:"inn",s:"2026-03-29T00:00:00Z"}]},
+    {t:"m",p:[{t:"lb",s:"  Plan:           "},{t:"ac",s:"Pro"}]},
+  ]},
+  {label:"mcp",cmd:"claude usage --mcp-breakdown",mood:"think",anim:"a-tilt",lines:[
+    {t:"s",s:""},{t:"v",s:"MCP Context Budget"},{t:"s",s:"\u2501".repeat(45)},{t:"s",s:""},
+    {t:"m",p:[{t:"lb",s:"  Total MCP context: "},{t:"vl",s:"34,521 tokens"},{t:"sp",s:" (17.3% of 200k)"}]},{t:"s",s:""},
+    {t:"m",p:[{t:"vl",s:"  Server: "},{t:"ac",s:"playwright"}]},
+    {t:"m",p:[{t:"lb",s:"    Tools: "},{t:"vl",s:"12"},{t:"lb",s:"          Cost: "},{t:"wn",s:"8,234 tokens"}]},
+    {t:"m",p:[{t:"sp",s:"    \u251c\u2500 browser_click           1,200 tokens"}]},
+    {t:"m",p:[{t:"sp",s:"    \u251c\u2500 browser_navigate        1,100 tokens"}]},
+    {t:"m",p:[{t:"sp",s:"    \u2514\u2500 browser_screenshot        980 tokens"}]},{t:"s",s:""},
+    {t:"m",p:[{t:"vl",s:"  Server: "},{t:"ac",s:"github"}]},
+    {t:"m",p:[{t:"lb",s:"    Tools: "},{t:"vl",s:"8"},{t:"lb",s:"           Cost: "},{t:"wn",s:"4,567 tokens"}]},
+    {t:"m",p:[{t:"sp",s:"    \u251c\u2500 create_pull_request     1,800 tokens"}]},
+    {t:"m",p:[{t:"sp",s:"    \u2514\u2500 search_code             1,200 tokens"}]},{t:"s",s:""},
+    {t:"m",p:[{t:"vl",s:"  Server: "},{t:"ac",s:"filesystem"}]},
+    {t:"m",p:[{t:"lb",s:"    Tools: "},{t:"vl",s:"5"},{t:"lb",s:"           Cost: "},{t:"hi",s:"2,100 tokens"}]},
+  ]},
+  {label:"json",cmd:"claude usage --json",mood:"chill",anim:"a-bob",lines:[
+    {t:"s",s:""},{t:"j",s:'{\n  "summary": {\n    "sessions": 47,\n    "total_cost_usd": 12.34,\n    "cache_hit_rate_pct": 78.1\n  },\n  "rate_limits": {\n    "session_usage_pct": 72.5,\n    "daily_usage_pct": 45.0,\n    "tokens_remaining": 1234567\n  },\n  "mcp_context": {\n    "total_tokens": 34521,\n    "usage_pct": 17.3\n  }\n}'},
+  ]},
+  {label:"watch",cmd:"claude usage --watch",mood:"hyped",anim:"a-jmp",lines:[
+    {t:"s",s:""},{t:"m",p:[{t:"hi",s:"  \u25cf LIVE"},{t:"sp",s:" \u2500 refreshing every 2s"}]},{t:"s",s:""},
+    {t:"m",p:[{t:"lb",s:"  Session tokens:  "},{t:"vl",s:"12,456 in"},{t:"sp",s:" / "},{t:"vl",s:"3,891 out"}]},
+    {t:"m",p:[{t:"lb",s:"  Session cost:    "},{t:"hi",s:"$0.47"}]},
+    {t:"m",p:[{t:"lb",s:"  Duration:        "},{t:"sp",s:"4m 23s"}]},{t:"s",s:""},
+    {t:"p",l:"  Rate limit:     ",x:"72.5%",f:.725,cl:"var(--ta)",w:1},
+    {t:"p",l:"  Context used:   ",x:"34.2%",f:.342,cl:"var(--tbl)",w:0},{t:"s",s:""},
+    {t:"m",p:[{t:"lb",s:"  Active model:   "},{t:"ac",s:"claude-sonnet-4"}]},
+    {t:"m",p:[{t:"lb",s:"  MCP overhead:   "},{t:"wn",s:"34,521 tokens (17.3%)"}]},{t:"s",s:""},
+    {t:"m",p:[{t:"sp",s:"  Press "},{t:"vl",s:"q"},{t:"sp",s:" to quit, "},{t:"vl",s:"r"},{t:"sp",s:" to reset"}]},
+  ]},
+];
+const tabsEl=document.getElementById("tabs"),bodyEl=document.getElementById("body"),dotsEl=document.getElementById("dots"),maEl=document.getElementById("ma"),statusEl=document.getElementById("status");
+let ai=0,T=null;
+demos.forEach((_,i)=>{const b=document.createElement("button");b.className="tab"+(i===0?" a":"");b.textContent=_.label;b.onclick=()=>go(i);tabsEl.appendChild(b);const d=document.createElement("div");d.className="pg"+(i===0?" a":"");d.onclick=()=>go(i);dotsEl.appendChild(d)});
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function bar(w,f,cl){const W=w||20,fi=Math.round(f*W),em=W-fi;return'<span style="color:var(--td)">\u2502</span><span style="color:'+cl+'">' +"\u2588".repeat(fi)+'</span><span style="color:var(--td)">'+"\u2591".repeat(em)+'</span><span style="color:var(--td)">\u2502</span>'}
+function rl(ln){
+  if(ln.t==="s")return'<span class="sp">'+esc(ln.s)+'</span>';
+  if(ln.t==="v")return'<span class="vl">'+esc(ln.s)+'</span>';
+  if(ln.t==="m")return ln.p.map(p=>'<span class="'+p.t+'">'+esc(p.s)+'</span>').join("");
+  if(ln.t==="b"){let s='<span class="lb">'+esc(ln.l)+'</span><span class="co">'+esc(ln.c)+'</span>';if(ln.x)s+='<span class="sp">  '+esc(ln.x)+'</span>';s+='  '+bar(20,0,ln.cl);return s}
+  if(ln.t==="p"){let s='<span class="lb">'+esc(ln.l)+'</span><span class="'+(ln.w?"wn":"hi")+'">'+esc(ln.x)+'</span>  '+bar(18,0,ln.cl);if(ln.w)s+=' <span class="wn">!</span>';return s}
+  if(ln.t==="j")return'<span class="inn">'+esc(ln.s).replace(/("[\w_]+")\s*:/g,'<span class="ac">$1</span>:').replace(/:\s*(".*?")/g,': <span class="hi">$1</span>').replace(/:\s*(\d+\.?\d*)/g,': <span class="co">$1</span>')+'</span>';
+  return""
+}
+function go(i){
+  if(T){clearTimeout(T);T=null}ai=i;
+  tabsEl.querySelectorAll(".tab").forEach((t,j)=>t.className="tab"+(j===i?" a":""));
+  dotsEl.querySelectorAll(".pg").forEach((d,j)=>d.className="pg"+(j===i?" a":""));
+  const dm=demos[i];statusEl.textContent="~ "+dm.label;maEl.className="ma "+dm.anim;
+  if(moods[dm.mood])moods[dm.mood]();draw();say(nextMsg(i));if(dm.anim==="a-jmp")sparkle();run(dm)
+}
+function run(dm){
+  bodyEl.innerHTML="";const pl=document.createElement("div");
+  pl.innerHTML='<span class="pr">~ </span><span id="typed"></span><span class="cur bk" id="cur"></span>';
+  bodyEl.appendChild(pl);const out=document.createElement("div");bodyEl.appendChild(out);
+  let ci=0;const te=pl.querySelector("#typed"),ce=pl.querySelector("#cur");
+  function typeN(){if(ci<dm.cmd.length){te.textContent+=dm.cmd[ci++];T=setTimeout(typeN,22+Math.random()*30)}else{ce.classList.remove("bk");ce.style.opacity="0";T=setTimeout(()=>reveal(dm.lines,out,0),220)}}
+  T=setTimeout(typeN,300)
+}
+function reveal(lines,ct,idx){
+  if(idx>=lines.length){T=setTimeout(()=>{maEl.className="ma a-bob";moods.hyped();draw();sparkle();say(nextMsg(ai));setTimeout(()=>{moods.chill();draw()},800)},350);return}
+  const ln=lines[idx],d=document.createElement("span");d.className="ln";d.innerHTML=rl(ln);ct.appendChild(d);
+  const dly=ln.t==="s"&&!ln.s?12:ln.t==="j"?40:35;
+  T=setTimeout(()=>{d.classList.add("v");
+    if(ln.t==="b"||ln.t==="p")setTimeout(()=>{const W=ln.t==="p"?18:20;const full=bar(W,ln.f,ln.cl)+(ln.w?' <span class="wn">!</span>':"");const zero=bar(W,0,ln.cl)+(ln.w?' <span class="wn">!</span>':"");d.innerHTML=d.innerHTML.replace(zero,full)},50);
+    T=setTimeout(()=>reveal(lines,ct,idx+1),dly)},dly)
+}
+document.getElementById("replay").onclick=()=>go(ai);
+document.getElementById("prev").onclick=()=>go((ai-1+demos.length)%demos.length);
+document.getElementById("next").onclick=()=>go((ai+1)%demos.length);
+draw();scheduleBlink();go(0);
+</script>
+</body>
+</html>
